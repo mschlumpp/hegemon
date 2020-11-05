@@ -26,6 +26,7 @@ impl StreamProvider for TemperatureStreamProvider {
         let mut streams = Vec::new();
 
         let mut core_index = 0;
+        let mut ccd_index = 0;
         let mut package_index = 0;
 
         for (subfeature, feature_label, chip_name) in subfeatures(SENSORS_FEATURE_TEMP, SENSORS_SUBFEATURE_TEMP_INPUT) {
@@ -37,6 +38,11 @@ impl StreamProvider for TemperatureStreamProvider {
                     format!("Core{}", core_index),
                     format!("Temperature of CPU core {}", core_index),
                 ))
+            } else if feature_label.to_lowercase().contains("tdie") {
+                Some((String::from("Die"), String::from("Temperature of CPU die")))
+            } else if feature_label.to_lowercase().contains("tccd") {
+                ccd_index += 1;
+                Some((format!("CCD{}", ccd_index), format!("Temperature of CCD {}", ccd_index)))
             } else if feature_label.to_lowercase().contains("package id") {
                 package_index += 1;
                 Some((
